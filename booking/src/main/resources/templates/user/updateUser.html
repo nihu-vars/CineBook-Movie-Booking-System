@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Edit User</title>
+
+  <style>
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f5f7;
+        color: #333;
+        margin: 0;
+        padding: 35px 20px;
+    }
+
+    h1 {
+        text-align: center;
+        font-size: 28px;
+        font-weight: 600;
+        margin: 0 0 28px;
+        color: #292929;
+    }
+
+    .form-container {
+        width: 100%;
+        max-width: 480px;
+        margin: 0 auto;
+        padding: 28px;
+        background-color: #fff;
+        border: 1px solid #e5e5e5;
+        border-radius: 8px;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        color: #444;
+    }
+
+    input {
+        width: 100%;
+        padding: 11px 12px;
+        border: 1px solid #d5d5d5;
+        border-radius: 5px;
+        font-size: 14px;
+        font-family: Arial, sans-serif;
+        color: #333;
+        background-color: #fff;
+    }
+
+    input:focus {
+        outline: none;
+        border-color: #777;
+    }
+
+    button {
+        width: 100%;
+        padding: 11px;
+        margin-top: 4px;
+        background-color: #333;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        font-size: 14px;
+        cursor: pointer;
+    }
+
+    button:hover {
+        background-color: #1f1f1f;
+    }
+
+    @media (max-width: 600px) {
+        body {
+            padding: 25px 14px;
+        }
+
+        h1 {
+            font-size: 24px;
+        }
+
+        .form-container {
+            padding: 22px 18px;
+        }
+    }
+  </style>
+</head>
+
+<body>
+
+<h1>Edit User</h1>
+
+<div class="form-container">
+
+  <form th:action="@{/user/user-details/update}"
+        th:object="${user}"
+        method="post">
+
+    <input type="hidden" th:field="*{userId}">
+
+    <div class="form-group">
+      <label>Email:</label>
+      <input type="email" th:field="*{userEmail}" required>
+    </div>
+
+    <div class="form-group">
+      <label>Phone:</label>
+      <input type="text" th:field="*{userPhone}" required>
+    </div>
+
+    <div class="form-group">
+      <label>Password:</label>
+      <input type="password" th:field="*{userPassword}" required>
+    </div>
+
+    <button type="submit">Update User</button>
+
+  </form>
+
+</div>
+
+</body>
+</html>

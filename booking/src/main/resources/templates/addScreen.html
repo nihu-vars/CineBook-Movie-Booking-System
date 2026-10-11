@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Add Screen</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f5f7;
+            color: #333;
+            margin: 0;
+            padding: 35px 20px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 28px;
+            font-weight: 600;
+            color: #292929;
+            margin: 0 0 28px;
+        }
+
+        .form-container {
+            width: 100%;
+            max-width: 520px;
+            margin: 0 auto;
+            padding: 28px;
+            background-color: #fff;
+            border: 1px solid #e5e5e5;
+            border-radius: 8px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #444;
+        }
+
+        input,
+        select {
+            display: block;
+            width: 100%;
+            padding: 11px 12px;
+            border: 1px solid #d5d5d5;
+            border-radius: 5px;
+            background-color: #fff;
+            color: #333;
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+        }
+
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: #777;
+        }
+
+        select {
+            cursor: pointer;
+        }
+
+        button {
+            width: 100%;
+            padding: 11px;
+            margin-top: 4px;
+            background-color: #333;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #1f1f1f;
+        }
+
+        .back-link {
+            display: block;
+            width: fit-content;
+            margin: 22px auto 0;
+            color: #444;
+            font-size: 14px;
+            text-decoration: none;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 25px 14px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .form-container {
+                padding: 22px 18px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<h1>Add Screen</h1>
+
+<div class="form-container">
+
+    <form th:action="@{/screen/add}"
+          th:object="${screen}"
+          method="post">
+
+        <div class="form-group">
+            <label for="screenName">
+                Screen Name:
+            </label>
+
+            <input
+                    type="text"
+                    id="screenName"
+                    th:field="*{screenName}"
+                    placeholder="Enter screen name"
+                    required>
+        </div>
+
+        <div class="form-group">
+            <label for="totalSeats">
+                Total Seats:
+            </label>
+
+            <input
+                    type="number"
+                    id="totalSeats"
+                    th:field="*{totalSeats}"
+                    min="1"
+                    placeholder="Enter total seats"
+                    required>
+        </div>
+
+        <div class="form-group">
+            <label for="seatsPerRow">
+                Seats Per Row:
+            </label>
+
+            <input
+                    type="number"
+                    id="seatsPerRow"
+                    th:field="*{seatsPerRow}"
+                    min="1"
+                    placeholder="Example: 10"
+                    required>
+        </div>
+
+        <div class="form-group">
+            <label for="regularRows">
+                Regular Rows:
+            </label>
+
+            <input
+                    type="number"
+                    id="regularRows"
+                    th:field="*{regularRows}"
+                    min="0"
+                    placeholder="Example: 5"
+                    required>
+        </div>
+
+        <div class="form-group">
+            <label for="premiumRows">
+                Premium Rows:
+            </label>
+
+            <input
+                    type="number"
+                    id="premiumRows"
+                    th:field="*{premiumRows}"
+                    min="0"
+                    placeholder="Example: 3"
+                    required>
+        </div>
+
+        <div class="form-group">
+            <label for="reclinerRows">
+                Recliner Rows:
+            </label>
+
+            <input
+                    type="number"
+                    id="reclinerRows"
+                    th:field="*{reclinerRows}"
+                    min="0"
+                    placeholder="Example: 2"
+                    required>
+        </div>
+
+        <div class="form-group">
+            <label for="theatre">
+                Theatre:
+            </label>
+
+            <select
+                    id="theatre"
+                    th:field="*{theatre}"
+                    required>
+
+                <option value="">
+                    Select Theatre
+                </option>
+
+                <option
+                        th:each="theater : ${theaters}"
+                        th:value="${theater.theatreId}"
+                        th:text="${theater.theatreName + ' - ' + theater.location}">
+                </option>
+
+            </select>
+        </div>
+
+        <button type="submit">
+            Add Screen
+        </button>
+
+    </form>
+
+</div>
+
+<a href="/screens" class="back-link">
+    Back to Screens
+</a>
+
+</body>
+
+</html>

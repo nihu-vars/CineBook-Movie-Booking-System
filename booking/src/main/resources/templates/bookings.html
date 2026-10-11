@@ -1,0 +1,254 @@
+
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Bookings</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f5f7;
+            margin: 0;
+            padding: 30px 20px;
+            color: #333;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 28px;
+            margin: 10px 0 30px;
+        }
+
+        .bookings-container {
+            width: 100%;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .booking-card {
+            background-color: #fff;
+            padding: 22px 25px;
+            margin-bottom: 20px;
+            border: 1px solid #e5e5e5;
+            border-radius: 7px;
+        }
+
+        .booking-card h2 {
+            margin: 0 0 18px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #eee;
+            font-size: 21px;
+            font-weight: 600;
+        }
+
+        .booking-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px 25px;
+        }
+
+        .booking-info p {
+            margin: 3px 0;
+            font-size: 14px;
+            line-height: 1.6;
+            overflow-wrap: anywhere;
+        }
+
+        .booking-id {
+            color: #666;
+        }
+
+        .status {
+            font-weight: bold;
+        }
+
+        .amount {
+            font-weight: bold;
+            font-size: 17px;
+        }
+
+        .no-bookings {
+            text-align: center;
+            background-color: #fff;
+            padding: 35px 20px;
+            border: 1px solid #e5e5e5;
+            border-radius: 7px;
+        }
+
+        .no-bookings h2 {
+            margin-top: 0;
+            font-size: 21px;
+        }
+
+        .no-bookings p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .cancel-button {
+            margin-top: 18px;
+            padding: 9px 16px;
+            background-color: #fff;
+            color: #b02a37;
+            border: 1px solid #b02a37;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .cancel-button:hover {
+            background-color: #b02a37;
+            color: #fff;
+        }
+
+        .back-button {
+            display: block;
+            width: 150px;
+            margin: 30px auto 10px;
+            padding: 11px 15px;
+            text-align: center;
+            background-color: #333;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .back-button:hover {
+            background-color: #222;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 20px 12px;
+            }
+
+            h1 {
+                font-size: 24px;
+                margin-bottom: 22px;
+            }
+
+            .booking-card {
+                padding: 18px;
+            }
+
+            .booking-info {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<h1>All Bookings</h1>
+
+<div class="bookings-container">
+
+    <!-- No bookings -->
+    <div class="no-bookings"
+         th:if="${#lists.isEmpty(bookings)}">
+
+        <h2>No bookings found</h2>
+        <p>There are no bookings in the system.</p>
+
+    </div>
+
+    <!-- All bookings -->
+    <div class="booking-card"
+         th:each="booking : ${bookings}">
+
+        <h2>
+                <span th:text="${booking.showModel.movieModel.movieTitle}">
+                    Movie Name
+                </span>
+        </h2>
+
+        <div class="booking-info">
+
+            <!-- Booking ID -->
+            <p class="booking-id">
+                <strong>Booking ID:</strong>
+                <span th:text="${booking.bookingId}">1</span>
+            </p>
+
+            <!-- User -->
+            <p>
+                <strong>User:</strong>
+                <span th:text="${booking.userModel.userEmail}">
+                        user@gmail.com
+                    </span>
+            </p>
+
+            <!-- Booking Date -->
+            <p>
+                <strong>Booking Date:</strong>
+                <span th:text="${booking.bookingDate}">
+                        2026-09-26
+                    </span>
+            </p>
+
+            <!-- Show Date -->
+            <p>
+                <strong>Show Date:</strong>
+                <span th:text="${booking.showModel.showDate}">
+                        2026-09-27
+                    </span>
+            </p>
+
+            <!-- Show Time -->
+            <p>
+                <strong>Show Time:</strong>
+                <span th:text="${booking.showModel.showStartTime}">
+                        18:00
+                    </span>
+            </p>
+
+            <!-- Amount -->
+            <p>
+                <strong>Amount:</strong>
+                <span class="amount">
+                        ₹<span th:text="${booking.bookingAmount}">400</span>
+                    </span>
+            </p>
+
+            <!-- Status -->
+            <p>
+                <strong>Status:</strong>
+                <span class="status"
+                      th:text="${booking.bookingStatus}">
+                        CONFIRMED
+                    </span>
+            </p>
+
+        </div>
+
+        <!-- Cancel Booking -->
+        <form th:if="${booking.bookingStatus == 'CONFIRMED'}"
+              th:action="@{/bookings/{id}/cancel(id=${booking.bookingId})}"
+              method="post">
+
+            <button type="submit" class="cancel-button">
+                Cancel Booking
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+<a href="/mainpage" class="back-button">
+    Home Page
+</a>
+
+</body>
+</html>

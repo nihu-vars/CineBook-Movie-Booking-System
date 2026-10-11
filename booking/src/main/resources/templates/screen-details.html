@@ -1,0 +1,203 @@
+
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Screen Details - CineBook</title>
+
+  <style>
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f5f5f5;
+        margin: 0;
+        color: #333;
+    }
+
+    header {
+        background-color: #fff;
+        padding: 18px 30px;
+        border-bottom: 1px solid #e0e0e0;
+    }
+
+    header h2 {
+        margin: 0;
+        font-size: 24px;
+        font-weight: 600;
+    }
+
+    .container {
+        max-width: 750px;
+        margin: 40px auto;
+        padding: 0 20px;
+    }
+
+    .details-card {
+        background-color: #fff;
+        border: 1px solid #e0e0e0;
+        border-radius: 6px;
+        padding: 30px;
+    }
+
+    h1 {
+        font-size: 26px;
+        margin: 0 0 25px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid #e5e5e5;
+    }
+
+    h2 {
+        font-size: 19px;
+        margin: 25px 0 18px;
+    }
+
+    .detail-row {
+        display: flex;
+        justify-content: space-between;
+        gap: 20px;
+        padding: 13px 0;
+        border-bottom: 1px solid #eee;
+    }
+
+    .detail-row strong {
+        font-weight: 600;
+        color: #555;
+    }
+
+    .detail-row span {
+        text-align: right;
+        overflow-wrap: anywhere;
+    }
+
+    .theatre-section {
+        margin-top: 25px;
+        padding-top: 5px;
+    }
+
+    .actions {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-top: 30px;
+    }
+
+    .btn {
+        display: inline-block;
+        padding: 11px 18px;
+        border-radius: 4px;
+        text-decoration: none;
+        font-size: 14px;
+        text-align: center;
+        border: 1px solid #333;
+        background-color: #333;
+        color: #fff;
+    }
+
+    .btn:hover {
+        background-color: #222;
+    }
+
+    .btn-secondary {
+        background-color: #fff;
+        color: #333;
+    }
+
+    .btn-secondary:hover {
+        background-color: #f0f0f0;
+    }
+
+    @media (max-width: 480px) {
+        header {
+            padding: 16px 20px;
+        }
+
+        .container {
+            margin: 25px auto;
+            padding: 0 12px;
+        }
+
+        .details-card {
+            padding: 20px;
+        }
+
+        .detail-row {
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .detail-row span {
+            text-align: left;
+        }
+
+        .actions {
+            flex-direction: column;
+        }
+
+        .btn {
+            width: 100%;
+        }
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <h2>CineBook</h2>
+</header>
+
+<div class="container">
+  <div class="details-card">
+
+    <h1>Screen Details</h1>
+
+    <div class="detail-row">
+      <strong>Screen ID:</strong>
+      <span th:text="${screen.screenId}"></span>
+    </div>
+
+    <div class="detail-row">
+      <strong>Screen Name:</strong>
+      <span th:text="${screen.screenName}"></span>
+    </div>
+
+    <div class="detail-row">
+      <strong>Total Seats:</strong>
+      <span th:text="${screen.totalSeats}"></span>
+    </div>
+
+    <div class="theatre-section">
+      <h2>Theatre Information</h2>
+
+      <div class="detail-row">
+        <strong>Theatre:</strong>
+        <span th:text="${screen.theatre.theatreName}"></span>
+      </div>
+
+      <div class="detail-row">
+        <strong>Location:</strong>
+        <span th:text="${screen.theatre.location}"></span>
+      </div>
+    </div>
+
+    <div class="actions">
+      <a href="/screens" class="btn btn-secondary">
+        Back to Screens
+      </a>
+
+      <a th:href="@{/screen/edit/{id}(id=${screen.screenId})}"
+         class="btn">
+        Edit Screen
+      </a>
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>

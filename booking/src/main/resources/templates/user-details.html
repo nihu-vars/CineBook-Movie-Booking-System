@@ -1,0 +1,155 @@
+
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Details</title>
+
+  <style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f6f9;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+    }
+
+    .container {
+        background-color: white;
+        width: 420px;
+        max-width: calc(100% - 60px);
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+        text-align: center;
+        color: #333;
+        margin-top: 0;
+        margin-bottom: 25px;
+    }
+
+    .detail {
+        background-color: #f8f9fa;
+        padding: 14px;
+        margin-bottom: 14px;
+        border-radius: 6px;
+        border: 1px solid #e5e7eb;
+        overflow-wrap: anywhere;
+    }
+
+    .detail strong {
+        display: block;
+        color: #555;
+        font-size: 13px;
+        margin-bottom: 7px;
+    }
+
+    .detail span {
+        color: #222;
+        font-size: 15px;
+    }
+
+    .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 25px;
+    }
+
+    .btn {
+        flex: 1;
+        min-width: 100px;
+        text-align: center;
+        padding: 11px 8px;
+        border-radius: 6px;
+        text-decoration: none;
+        font-size: 14px;
+        box-sizing: border-box;
+        transition: background-color 0.3s;
+    }
+
+    .back-btn {
+        background-color: #6c757d;
+        color: white;
+    }
+
+    .back-btn:hover {
+        background-color: #545b62;
+    }
+
+    .edit-btn {
+        background-color: #007bff;
+        color: white;
+    }
+
+    .edit-btn:hover {
+        background-color: #0056b3;
+    }
+
+    .logout-btn {
+        display: block;
+        text-align: center;
+        margin-top: 20px;
+        color: #dc3545;
+        text-decoration: none;
+        font-size: 14px;
+    }
+
+    .logout-btn:hover {
+        text-decoration: underline;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <h1>User Details</h1>
+
+  <div class="detail">
+    <strong>User ID</strong>
+    <span th:text="${user.userId}"></span>
+  </div>
+
+  <div class="detail">
+    <strong>Email</strong>
+    <span th:text="${user.userEmail}"></span>
+  </div>
+
+  <div class="detail">
+    <strong>Phone</strong>
+    <span th:text="${user.userPhone}"></span>
+  </div>
+
+  <div class="detail">
+    <strong>Password</strong>
+    <span>••••••••</span>
+  </div>
+
+  <div class="actions">
+    <a class="btn back-btn" th:href="@{/users}">
+      Back to Users
+    </a>
+
+    <a class="btn edit-btn"
+       th:href="@{/users/{id}/edit(id=${user.userId})}">
+      Edit User
+    </a>
+  </div>
+
+  <a class="logout-btn" th:href="@{/logOut}">
+    Sign out
+  </a>
+
+</div>
+
+</body>
+</html>

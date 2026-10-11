@@ -1,0 +1,331 @@
+
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Movies</title>
+
+  <style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: Arial, sans-serif;
+    }
+
+    body {
+        background-color: #f5f5f5;
+        color: #333;
+        min-height: 100vh;
+    }
+
+    /* Header */
+    .header {
+        background-color: white;
+        padding: 20px 40px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
+        border-bottom: 1px solid #e0e0e0;
+    }
+
+    .header h1 {
+        font-size: 24px;
+        color: #333;
+    }
+
+    .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    /* Buttons */
+    .add-btn,
+    .account-btn {
+        display: inline-block;
+        padding: 10px 16px;
+        background-color: #333;
+        color: white;
+        text-decoration: none;
+        border: 1px solid #333;
+        border-radius: 4px;
+        font-size: 14px;
+        white-space: nowrap;
+    }
+
+    .add-btn:hover,
+    .account-btn:hover {
+        background-color: #222;
+    }
+
+    /* Main Container */
+    .container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 30px 40px;
+    }
+
+    .page-title {
+        font-size: 26px;
+        margin-bottom: 25px;
+        color: #333;
+    }
+
+    /* Movie Grid */
+    .movie-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 25px;
+    }
+
+    /* Movie Card */
+    .movie-card {
+        background-color: white;
+        border: 1px solid #e0e0e0;
+        border-radius: 6px;
+        overflow: hidden;
+        transition: box-shadow 0.2s;
+    }
+
+    .movie-card:hover {
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+    }
+
+    .movie-card img {
+        width: 100%;
+        height: 280px;
+        object-fit: cover;
+        display: block;
+        background-color: #eee;
+    }
+
+    .movie-info {
+        padding: 18px;
+    }
+
+    .movie-info h2 {
+        font-size: 19px;
+        margin-bottom: 15px;
+        color: #333;
+        overflow-wrap: anywhere;
+    }
+
+    .movie-info p {
+        color: #666;
+        font-size: 14px;
+        margin-bottom: 12px;
+        line-height: 1.5;
+    }
+
+    .movie-info strong {
+        color: #333;
+    }
+
+    /* Card Actions */
+    .buttons {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-top: 18px;
+    }
+
+    .buttons a,
+    .buttons button {
+        display: inline-block;
+        padding: 8px 12px;
+        border: 1px solid #333;
+        border-radius: 4px;
+        text-decoration: none;
+        cursor: pointer;
+        font-size: 13px;
+        text-align: center;
+        transition: background-color 0.2s;
+    }
+
+    .view-btn {
+        background-color: #333;
+        color: white;
+    }
+
+    .view-btn:hover {
+        background-color: #222;
+    }
+
+    .edit-btn {
+        background-color: white;
+        color: #333;
+    }
+
+    .edit-btn:hover {
+        background-color: #f0f0f0;
+    }
+
+    .delete-btn {
+        background-color: white;
+        color: #555;
+    }
+
+    .delete-btn:hover {
+        background-color: #eee;
+    }
+
+    .delete-form {
+        display: inline;
+    }
+
+    /* Empty State */
+    .empty-message {
+        background-color: white;
+        border: 1px solid #e0e0e0;
+        border-radius: 6px;
+        padding: 30px;
+        text-align: center;
+        color: #666;
+        margin-bottom: 20px;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 600px) {
+        .header {
+            padding: 20px;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .header-actions {
+            flex-wrap: wrap;
+        }
+
+        .container {
+            padding: 25px 20px;
+        }
+
+        .page-title {
+            font-size: 23px;
+        }
+
+        .movie-grid {
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 18px;
+        }
+    }
+
+    @media (max-width: 450px) {
+        .movie-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .movie-card img {
+            height: 320px;
+        }
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- Header -->
+<div class="header">
+
+  <h1>CineBook</h1>
+
+  <div class="header-actions">
+
+    <a href="/movies/add" class="add-btn">
+      + Add Movie
+    </a>
+
+    <a th:href="@{/mainpage}" class="account-btn">
+      Home Page
+    </a>
+
+  </div>
+
+</div>
+
+<!-- Main Content -->
+<div class="container">
+
+  <h1 class="page-title">Available Movies</h1>
+
+  <!-- Movie List -->
+  <div class="movie-grid" th:if="${not #lists.isEmpty(movies)}">
+
+    <div class="movie-card" th:each="movie : ${movies}">
+
+      <!-- Poster -->
+      <img th:src="${movie.moviePosterUrl}"
+           th:alt="${movie.movieTitle}">
+
+      <!-- Movie Information -->
+      <div class="movie-info">
+
+        <h2 th:text="${movie.movieTitle}">
+          Movie Title
+        </h2>
+
+        <p>
+          <strong>Genre:</strong>
+          <span th:text="${movie.movieGenre}"></span>
+        </p>
+
+        <p>
+          <strong>Rating:</strong>
+          <span th:text="${movie.movieRating}"></span>
+        </p>
+
+        <p>
+          <strong>Duration:</strong>
+          <span th:text="${movie.movieDurationMinutes}"></span>
+          minutes
+        </p>
+
+        <!-- Actions -->
+        <div class="buttons">
+
+          <a th:href="@{/admin/movies/{id}(id=${movie.movieId})}"
+             class="view-btn">
+            View
+          </a>
+
+          <a th:href="@{/movies/{id}/edit(id=${movie.movieId})}"
+             class="edit-btn">
+            Edit
+          </a>
+
+          <form th:action="@{/movies/{id}/delete(id=${movie.movieId})}"
+                method="post"
+                class="delete-form">
+
+            <button type="submit"
+                    class="delete-btn"
+                    onclick="return confirm('Are you sure you want to delete this movie?')">
+              Delete
+            </button>
+
+          </form>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- No Movies -->
+  <div class="empty-message"
+       th:if="${#lists.isEmpty(movies)}">
+
+    <p>No movies available at the moment.</p>
+
+  </div>
+
+</div>
+
+</body>
+</html>

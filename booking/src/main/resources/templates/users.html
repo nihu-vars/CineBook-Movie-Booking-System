@@ -1,0 +1,232 @@
+
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>All Users</title>
+
+  <style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f6f9;
+        margin: 0;
+        padding: 40px 20px;
+    }
+
+    .container {
+        max-width: 1000px;
+        margin: 0 auto;
+        background-color: white;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+        text-align: center;
+        color: #333;
+        margin-top: 0;
+        margin-bottom: 30px;
+    }
+
+    .top-actions {
+        display: flex;
+        justify-content: flex-end;
+        margin-bottom: 20px;
+    }
+
+    .add-btn {
+        background-color: #007bff;
+        color: white;
+        padding: 11px 18px;
+        border-radius: 6px;
+        text-decoration: none;
+        font-size: 14px;
+        transition: background-color 0.3s;
+    }
+
+    .add-btn:hover {
+        background-color: #0056b3;
+    }
+
+    .table-wrapper {
+        overflow-x: auto;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        text-align: left;
+    }
+
+    thead {
+        background-color: #007bff;
+        color: white;
+    }
+
+    th, td {
+        padding: 15px;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    th {
+        font-size: 14px;
+        font-weight: bold;
+    }
+
+    td {
+        color: #444;
+        font-size: 14px;
+    }
+
+    tbody tr:hover {
+        background-color: #f8f9fa;
+    }
+
+    .actions {
+        white-space: nowrap;
+    }
+
+    .action-link {
+        display: inline-block;
+        padding: 7px 11px;
+        border-radius: 5px;
+        text-decoration: none;
+        font-size: 13px;
+        margin: 2px;
+    }
+
+    .view-btn {
+        background-color: #e2eafc;
+        color: #174ea6;
+    }
+
+    .view-btn:hover {
+        background-color: #cbdafa;
+    }
+
+    .edit-btn {
+        background-color: #fff3cd;
+        color: #856404;
+    }
+
+    .edit-btn:hover {
+        background-color: #ffe69c;
+    }
+
+    .delete-btn {
+        background-color: #dc3545;
+        color: white;
+        border: none;
+        padding: 8px 11px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 13px;
+        margin: 2px;
+    }
+
+    .delete-btn:hover {
+        background-color: #b02a37;
+    }
+
+    .empty-message {
+        text-align: center;
+        padding: 25px;
+        color: #777;
+    }
+
+    @media (max-width: 600px) {
+        body {
+            padding: 20px 10px;
+        }
+
+        .container {
+            padding: 18px;
+        }
+
+        th, td {
+            padding: 10px;
+        }
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <h1>All Users</h1>
+
+  <div class="top-actions">
+    <a class="add-btn" th:href="@{/users/add}">
+      + Add User
+    </a>
+  </div>
+
+  <div class="table-wrapper">
+
+    <table>
+
+      <thead>
+      <tr>
+        <th>ID</th>
+        <th>Email</th>
+        <th>Phone</th>
+        <th>Actions</th>
+      </tr>
+      </thead>
+
+      <tbody>
+
+      <tr th:each="user : ${users}">
+
+        <td th:text="${user.userId}"></td>
+
+        <td th:text="${user.userEmail}"></td>
+
+        <td th:text="${user.userPhone}"></td>
+
+        <td class="actions">
+
+          <a class="action-link view-btn"
+             th:href="@{/user/users/{id}(id=${user.userId})}">
+            View
+          </a>
+
+          <a class="action-link edit-btn"
+             th:href="@{/users/{id}/edit(id=${user.userId})}">
+            Edit
+          </a>
+
+          <form th:action="@{/users/{id}/delete(id=${user.userId})}"
+                method="post"
+                style="display:inline;">
+
+            <button class="delete-btn" type="submit">
+              Delete
+            </button>
+
+          </form>
+
+        </td>
+
+      </tr>
+
+      <tr th:if="${#lists.isEmpty(users)}">
+        <td colspan="4" class="empty-message">
+          No users found. Click "Add User" to create one.
+        </td>
+      </tr>
+
+      </tbody>
+
+    </table>
+
+  </div>
+
+</div>
+
+</body>
+</html>

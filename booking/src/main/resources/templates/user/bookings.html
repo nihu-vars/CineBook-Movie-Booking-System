@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>My Bookings</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f5f7;
+            color: #333;
+            margin: 0;
+            padding: 35px 20px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 28px;
+            font-weight: 600;
+            margin: 0 0 30px;
+            color: #292929;
+        }
+
+        .bookings-container {
+            width: 100%;
+            max-width: 850px;
+            margin: 0 auto;
+        }
+
+        .booking-card {
+            background-color: #fff;
+            padding: 24px;
+            margin-bottom: 18px;
+            border: 1px solid #e5e5e5;
+            border-radius: 8px;
+        }
+
+        .booking-card h2 {
+            font-size: 21px;
+            font-weight: 600;
+            margin: 0 0 20px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid #ededed;
+            color: #303030;
+        }
+
+        .booking-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px 24px;
+        }
+
+        .booking-info p {
+            margin: 0;
+            font-size: 14px;
+            line-height: 1.6;
+            overflow-wrap: anywhere;
+        }
+
+        .booking-info strong {
+            color: #555;
+            font-weight: 600;
+        }
+
+        .booking-id {
+            color: #666;
+        }
+
+        .status {
+            font-weight: 600;
+            color: #287747;
+        }
+
+        .amount {
+            font-weight: 600;
+            font-size: 17px;
+            color: #292929;
+        }
+
+        .booking-info form {
+            grid-column: 1 / -1;
+            margin-top: 4px;
+        }
+
+        button {
+            padding: 9px 16px;
+            background-color: #fff;
+            color: #b42318;
+            border: 1px solid #d9d9d9;
+            border-radius: 5px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #fff4f2;
+            border-color: #b42318;
+        }
+
+        .no-bookings {
+            text-align: center;
+            background-color: #fff;
+            padding: 35px 20px;
+            border: 1px solid #e5e5e5;
+            border-radius: 8px;
+        }
+
+        .no-bookings h2 {
+            font-size: 20px;
+            font-weight: 600;
+            margin: 0 0 10px;
+        }
+
+        .no-bookings p {
+            margin: 0;
+            color: #777;
+            font-size: 14px;
+        }
+
+        .back-button {
+            display: block;
+            width: fit-content;
+            margin: 28px auto 0;
+            padding: 11px 22px;
+            text-align: center;
+            background-color: #333;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .back-button:hover {
+            background-color: #1f1f1f;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 25px 14px;
+            }
+
+            h1 {
+                font-size: 24px;
+                margin-bottom: 22px;
+            }
+
+            .booking-card {
+                padding: 18px;
+            }
+
+            .booking-info {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            .booking-info form {
+                grid-column: auto;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<h1>My Bookings</h1>
+
+<div class="bookings-container">
+
+    <!-- If there are no bookings -->
+    <div class="no-bookings"
+         th:if="${#lists.isEmpty(bookings)}">
+
+        <h2>No bookings found</h2>
+
+        <p>You have not booked any tickets yet.</p>
+
+    </div>
+
+    <!-- Show all bookings -->
+    <div class="booking-card"
+         th:each="booking : ${bookings}">
+
+        <h2>
+            <span th:text="${booking.showModel.movieModel.movieTitle}">
+                Movie Name
+            </span>
+        </h2>
+
+        <div class="booking-info">
+
+            <p class="booking-id">
+                <strong>Booking ID:</strong>
+                <span th:text="${booking.bookingId}">1</span>
+            </p>
+
+            <p>
+                <strong>Booking Date:</strong>
+                <span th:text="${booking.bookingDate}">2026-09-26</span>
+            </p>
+
+            <p>
+                <strong>Show Date:</strong>
+                <span th:text="${booking.showModel.showDate}">2026-09-27</span>
+            </p>
+
+            <p>
+                <strong>Show Time:</strong>
+                <span th:text="${booking.showModel.showStartTime}">18:00</span>
+            </p>
+
+            <p>
+                <strong>Amount:</strong>
+                <span class="amount">
+                    ₹<span th:text="${booking.bookingAmount}">400</span>
+                </span>
+            </p>
+
+            <p>
+                <strong>Status:</strong>
+                <span class="status"
+                      th:text="${booking.bookingStatus}">
+                    CONFIRMED
+                </span>
+            </p>
+
+            <form th:action="@{/user/bookings/{id}/cancel(id=${booking.bookingId})}"
+                  method="post">
+
+                <button type="submit">
+                    Cancel Booking
+                </button>
+
+            </form>
+
+        </div>
+    </div>
+
+</div>
+
+<a href="/user/movies" class="back-button">
+    Browse Movies
+</a>
+
+</body>
+</html>

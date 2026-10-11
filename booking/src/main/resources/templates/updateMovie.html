@@ -1,0 +1,250 @@
+
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Update Movie - CineBook</title>
+
+  <style>
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f5f5f5;
+        margin: 0;
+        color: #333;
+    }
+
+    .header {
+        background-color: #fff;
+        padding: 18px 30px;
+        border-bottom: 1px solid #e0e0e0;
+    }
+
+    .header h2 {
+        margin: 0;
+        font-size: 24px;
+        font-weight: 600;
+    }
+
+    .container {
+        width: 600px;
+        max-width: calc(100% - 30px);
+        margin: 35px auto;
+        background-color: #fff;
+        padding: 30px;
+        border: 1px solid #e0e0e0;
+        border-radius: 6px;
+    }
+
+    h1 {
+        text-align: center;
+        font-size: 26px;
+        margin: 0 0 28px;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 7px;
+        font-weight: 600;
+        font-size: 14px;
+    }
+
+    input,
+    textarea {
+        display: block;
+        width: 100%;
+        padding: 11px 12px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-family: Arial, sans-serif;
+        font-size: 14px;
+        color: #333;
+        background-color: #fff;
+        outline: none;
+    }
+
+    input:focus,
+    textarea:focus {
+        border-color: #666;
+        box-shadow: 0 0 0 2px rgba(51, 51, 51, 0.08);
+    }
+
+    textarea {
+        min-height: 110px;
+        resize: vertical;
+    }
+
+    .buttons {
+        display: flex;
+        gap: 10px;
+        margin-top: 25px;
+    }
+
+    .update-btn,
+    .cancel-btn {
+        display: inline-block;
+        padding: 12px 20px;
+        border: 1px solid #333;
+        border-radius: 4px;
+        font-size: 14px;
+        font-family: Arial, sans-serif;
+        text-align: center;
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+    .update-btn {
+        background-color: #333;
+        color: #fff;
+        flex: 1;
+    }
+
+    .update-btn:hover {
+        background-color: #222;
+    }
+
+    .cancel-btn {
+        background-color: #fff;
+        color: #333;
+    }
+
+    .cancel-btn:hover {
+        background-color: #f0f0f0;
+    }
+
+    @media (max-width: 480px) {
+        .header {
+            padding: 16px 20px;
+        }
+
+        .container {
+            padding: 22px 18px;
+            margin: 25px auto;
+        }
+
+        h1 {
+            font-size: 23px;
+        }
+
+        .buttons {
+            flex-direction: column;
+        }
+
+        .update-btn,
+        .cancel-btn {
+            width: 100%;
+        }
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="header">
+  <h2>CineBook</h2>
+</div>
+
+<div class="container">
+
+  <h1>Update Movie</h1>
+
+  <form th:action="@{/movies/update}"
+        th:object="${movie}"
+        method="post">
+
+    <!-- Preserve the movie ID -->
+    <input type="hidden" th:field="*{movieId}">
+
+    <div class="form-group">
+      <label for="movieTitle">Movie Title</label>
+      <input type="text"
+             id="movieTitle"
+             th:field="*{movieTitle}"
+             required>
+    </div>
+
+    <div class="form-group">
+      <label for="movieDescription">Description</label>
+      <textarea id="movieDescription"
+                th:field="*{movieDescription}"
+                required></textarea>
+    </div>
+
+    <div class="form-group">
+      <label for="movieDurationMinutes">Duration (minutes)</label>
+      <input type="number"
+             id="movieDurationMinutes"
+             th:field="*{movieDurationMinutes}"
+             min="1"
+             required>
+    </div>
+
+    <div class="form-group">
+      <label for="movieLanguages">Languages</label>
+      <input type="text"
+             id="movieLanguages"
+             th:field="*{movieLanguages}"
+             required>
+    </div>
+
+    <div class="form-group">
+      <label for="movieGenre">Genre</label>
+      <input type="text"
+             id="movieGenre"
+             th:field="*{movieGenre}"
+             required>
+    </div>
+
+    <div class="form-group">
+      <label for="movieRating">Rating (0–10)</label>
+      <input type="number"
+             id="movieRating"
+             th:field="*{movieRating}"
+             min="0"
+             max="10"
+             step="0.1"
+             required>
+    </div>
+
+    <div class="form-group">
+      <label for="moviePosterUrl">Poster URL</label>
+      <input type="url"
+             id="moviePosterUrl"
+             th:field="*{moviePosterUrl}"
+             required>
+    </div>
+
+    <div class="form-group">
+      <label for="movieReleaseDate">Release Date</label>
+      <input type="date"
+             id="movieReleaseDate"
+             name="movieReleaseDate"
+             th:value="${#temporals.format(movie.movieReleaseDate, 'yyyy-MM-dd')}"
+             required>
+    </div>
+
+    <div class="buttons">
+      <button type="submit" class="update-btn">
+        Update Movie
+      </button>
+
+      <a th:href="@{/movies}" class="cancel-btn">
+        Cancel
+      </a>
+    </div>
+
+  </form>
+
+</div>
+
+</body>
+</html>

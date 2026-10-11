@@ -1,0 +1,107 @@
+
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Booking Confirmation</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 25px 14px;
+            background-color: #f4f5f7;
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .confirmation {
+            width: 100%;
+            max-width: 500px;
+            padding: 35px 30px;
+            background-color: #fff;
+            border: 1px solid #e5e5e5;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        h1 {
+            margin: 0 0 22px;
+            color: #287747;
+            font-size: 27px;
+            font-weight: 600;
+        }
+
+        .confirmation p {
+            margin: 12px 0;
+            font-size: 15px;
+            line-height: 1.6;
+            color: #555;
+        }
+
+        .home-button {
+            display: inline-block;
+            margin-top: 22px;
+            padding: 11px 22px;
+            background-color: #333;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .home-button:hover {
+            background-color: #1f1f1f;
+        }
+
+        @media (max-width: 480px) {
+            .confirmation {
+                padding: 28px 20px;
+            }
+
+            h1 {
+                font-size: 23px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="confirmation">
+
+    <h1>
+        Booking Confirmed!
+    </h1>
+
+    <p>
+        Your movie tickets have been booked successfully.
+    </p>
+
+    <p>
+        Thank you for booking with us.
+    </p>
+
+    <a href="/user/bookings"
+       class="home-button">
+
+        Go to Bookings
+
+    </a>
+
+</div>
+
+</body>
+
+</html>

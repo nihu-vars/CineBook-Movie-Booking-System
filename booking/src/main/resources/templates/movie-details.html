@@ -1,0 +1,229 @@
+
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title th:text="${movie.movieTitle}">Movie Details</title>
+
+  <style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: Arial, sans-serif;
+    }
+
+    body {
+        background-color: #f5f5f5;
+        color: #333;
+        min-height: 100vh;
+    }
+
+    /* Header */
+    .header {
+        background-color: white;
+        padding: 20px 40px;
+        border-bottom: 1px solid #e0e0e0;
+    }
+
+    .header h1 {
+        font-size: 24px;
+        color: #333;
+    }
+
+    /* Main Container */
+    .container {
+        max-width: 1000px;
+        width: calc(100% - 40px);
+        margin: 35px auto;
+        background-color: white;
+        padding: 30px;
+        border: 1px solid #e0e0e0;
+        border-radius: 6px;
+        display: flex;
+        align-items: flex-start;
+        gap: 35px;
+    }
+
+    /* Movie Poster */
+    .poster {
+        width: 280px;
+        flex-shrink: 0;
+    }
+
+    .poster img {
+        width: 100%;
+        height: auto;
+        display: block;
+        border: 1px solid #e0e0e0;
+        border-radius: 5px;
+    }
+
+    /* Movie Details */
+    .details {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .details h1 {
+        font-size: 30px;
+        margin-bottom: 25px;
+        color: #333;
+    }
+
+    .details p {
+        font-size: 15px;
+        line-height: 1.6;
+        margin: 16px 0;
+        color: #555;
+        overflow-wrap: anywhere;
+    }
+
+    .details strong {
+        color: #333;
+    }
+
+    /* Buttons */
+    .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 25px;
+    }
+
+    .btn {
+        display: inline-block;
+        padding: 10px 18px;
+        background-color: #333;
+        color: white;
+        text-decoration: none;
+        border: 1px solid #333;
+        border-radius: 4px;
+        font-size: 14px;
+        transition: background-color 0.2s;
+    }
+
+    .btn:hover {
+        background-color: #222;
+    }
+
+    .book-btn {
+        background-color: white;
+        color: #333;
+    }
+
+    .book-btn:hover {
+        background-color: #f0f0f0;
+    }
+
+    /* Responsive Layout */
+    @media (max-width: 650px) {
+        .header {
+            padding: 20px;
+        }
+
+        .container {
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            margin: 20px auto;
+        }
+
+        .poster {
+            width: 100%;
+            max-width: 280px;
+        }
+
+        .details {
+            width: 100%;
+        }
+
+        .details h1 {
+            font-size: 25px;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .actions {
+            justify-content: center;
+        }
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- Header -->
+<div class="header">
+  <h1>CineBook</h1>
+</div>
+
+<!-- Movie Details Container -->
+<div class="container">
+
+  <!-- Movie Poster -->
+  <div class="poster">
+    <img th:src="${movie.moviePosterUrl}"
+         th:alt="${movie.movieTitle}">
+  </div>
+
+  <!-- Movie Information -->
+  <div class="details">
+
+    <h1 th:text="${movie.movieTitle}">
+      Movie Title
+    </h1>
+
+    <p>
+      <strong>Description:</strong>
+      <span th:text="${movie.movieDescription}"></span>
+    </p>
+
+    <p>
+      <strong>Genre:</strong>
+      <span th:text="${movie.movieGenre}"></span>
+    </p>
+
+    <p>
+      <strong>Language:</strong>
+      <span th:text="${movie.movieLanguages}"></span>
+    </p>
+
+    <p>
+      <strong>Duration:</strong>
+      <span th:text="${movie.movieDurationMinutes}"></span>
+      minutes
+    </p>
+
+    <p>
+      <strong>Rating:</strong>
+      <span th:text="${movie.movieRating}"></span>
+    </p>
+
+    <p>
+      <strong>Release Date:</strong>
+      <span th:text="${movie.movieReleaseDate}"></span>
+    </p>
+
+    <!-- Actions -->
+    <div class="actions">
+
+      <a href="/user/movies" class="btn">
+        Back to Movies
+      </a>
+
+      <a th:href="@{/shows/movie/{id}(id=${movie.movieId})}"
+         class="btn book-btn">
+        Book Tickets
+      </a>
+
+    </div>
+
+  </div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,277 @@
+
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Update Show - CineBook</title>
+
+  <style>
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f5f5f5;
+        margin: 0;
+        color: #333;
+    }
+
+    .header {
+        background-color: #fff;
+        padding: 18px 30px;
+        border-bottom: 1px solid #e0e0e0;
+    }
+
+    .header h2 {
+        margin: 0;
+        font-size: 24px;
+        font-weight: 600;
+    }
+
+    .container {
+        width: 600px;
+        max-width: calc(100% - 30px);
+        margin: 35px auto;
+        background-color: #fff;
+        padding: 30px;
+        border: 1px solid #e0e0e0;
+        border-radius: 6px;
+    }
+
+    h1 {
+        text-align: center;
+        font-size: 26px;
+        margin: 0 0 28px;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 7px;
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    input,
+    select {
+        display: block;
+        width: 100%;
+        padding: 11px 12px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        background-color: #fff;
+        color: #333;
+        font-family: Arial, sans-serif;
+        font-size: 14px;
+        outline: none;
+    }
+
+    input:focus,
+    select:focus {
+        border-color: #666;
+        box-shadow: 0 0 0 2px rgba(51, 51, 51, 0.08);
+    }
+
+    .section-title {
+        font-size: 16px;
+        font-weight: 600;
+        margin: 25px 0 18px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #e5e5e5;
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+    }
+
+    .buttons {
+        display: flex;
+        gap: 10px;
+        margin-top: 28px;
+    }
+
+    .update-btn,
+    .back-btn {
+        display: inline-block;
+        padding: 12px 20px;
+        border: 1px solid #333;
+        border-radius: 4px;
+        font-family: Arial, sans-serif;
+        font-size: 14px;
+        text-align: center;
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+    .update-btn {
+        flex: 1;
+        background-color: #333;
+        color: #fff;
+    }
+
+    .update-btn:hover {
+        background-color: #222;
+    }
+
+    .back-btn {
+        background-color: #fff;
+        color: #333;
+    }
+
+    .back-btn:hover {
+        background-color: #f0f0f0;
+    }
+
+    @media (max-width: 480px) {
+        .header {
+            padding: 16px 20px;
+        }
+
+        .container {
+            padding: 22px 18px;
+            margin: 25px auto;
+        }
+
+        h1 {
+            font-size: 23px;
+        }
+
+        .form-row {
+            grid-template-columns: 1fr;
+            gap: 0;
+        }
+
+        .buttons {
+            flex-direction: column;
+        }
+
+        .update-btn,
+        .back-btn {
+            width: 100%;
+        }
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="header">
+  <h2>CineBook</h2>
+</div>
+
+<div class="container">
+
+  <h1>Update Show</h1>
+
+  <form th:object="${show}"
+        th:action="@{/shows/edit/{id}(id=${show.showId})}"
+        method="post">
+
+    <h3 class="section-title">Show Information</h3>
+
+    <div class="form-group">
+      <label for="movieModel">Movie</label>
+
+      <select id="movieModel"
+              th:field="*{movieModel}"
+              required>
+
+        <option value="">Select Movie</option>
+
+        <option th:each="movie : ${movies}"
+                th:value="${movie.movieId}"
+                th:text="${movie.movieTitle}">
+        </option>
+
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="screenModel">Screen</label>
+
+      <select id="screenModel"
+              th:field="*{screenModel}"
+              required>
+
+        <option value="">Select Screen</option>
+
+        <option th:each="screen : ${screens}"
+                th:value="${screen.screenId}"
+                th:text="${screen.screenName + ' - ' + screen.theatre.theatreName}">
+        </option>
+
+      </select>
+    </div>
+
+    <h3 class="section-title">Date and Timing</h3>
+
+    <div class="form-group">
+      <label for="showDate">Show Date</label>
+
+      <input type="date"
+             id="showDate"
+             th:field="*{showDate}"
+             required>
+    </div>
+
+    <div class="form-row">
+
+      <div class="form-group">
+        <label for="showStartTime">Start Time</label>
+
+        <input type="time"
+               id="showStartTime"
+               th:field="*{showStartTime}"
+               required>
+      </div>
+
+      <div class="form-group">
+        <label for="showEndTime">End Time</label>
+
+        <input type="time"
+               id="showEndTime"
+               th:field="*{showEndTime}"
+               required>
+      </div>
+
+    </div>
+
+    <h3 class="section-title">Ticket Pricing</h3>
+
+    <div class="form-group">
+      <label for="price">Ticket Price (₹)</label>
+
+      <input type="number"
+             id="price"
+             th:field="*{price}"
+             step="0.01"
+             min="0"
+             required>
+    </div>
+
+    <div class="buttons">
+
+      <button type="submit" class="update-btn">
+        Update Show
+      </button>
+
+      <a class="back-btn" th:href="@{/shows}">
+        Cancel
+      </a>
+
+    </div>
+
+  </form>
+
+</div>
+
+</body>
+</html>

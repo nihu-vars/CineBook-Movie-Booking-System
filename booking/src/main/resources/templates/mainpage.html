@@ -1,0 +1,294 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Ticket Booking</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+            min-height: 100vh;
+        }
+
+        /* Navbar */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            background-color: white;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 25px;
+            flex-wrap: wrap;
+        }
+
+        .nav-links a {
+            color: #444;
+            text-decoration: none;
+            font-size: 15px;
+        }
+
+        .nav-links a:hover {
+            color: #000;
+            text-decoration: underline;
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            padding: 65px 20px;
+        }
+
+        .hero h1 {
+            font-size: 36px;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .hero h1 span {
+            color: #555;
+        }
+
+        .hero p {
+            font-size: 16px;
+            color: #666;
+            line-height: 1.7;
+            margin-bottom: 25px;
+        }
+
+        .hero-button {
+            display: inline-block;
+            padding: 11px 22px;
+            background-color: #333;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 14px;
+            transition: background-color 0.2s;
+        }
+
+        .hero-button:hover {
+            background-color: #222;
+        }
+
+        /* Features Section */
+        .section-title {
+            text-align: center;
+            font-size: 25px;
+            margin-bottom: 25px;
+            color: #333;
+        }
+
+        .cards {
+            display: flex;
+            justify-content: center;
+            align-items: stretch;
+            gap: 20px;
+            flex-wrap: wrap;
+            padding: 0 35px 50px;
+        }
+
+        .card {
+            width: 230px;
+            padding: 25px 20px;
+            text-align: center;
+            background-color: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            transition: box-shadow 0.2s;
+        }
+
+        .card:hover {
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+        }
+
+        .card-icon {
+            font-size: 32px;
+            margin-bottom: 15px;
+        }
+
+        .card h3 {
+            font-size: 19px;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .card p {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 20px;
+            min-height: 42px;
+        }
+
+        .card a {
+            display: inline-block;
+            padding: 9px 16px;
+            background-color: #333;
+            color: white;
+            border: 1px solid #333;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .card a:hover {
+            background-color: #222;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 20px;
+            border-top: 1px solid #e0e0e0;
+            background-color: white;
+            color: #777;
+            font-size: 14px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 700px) {
+            .navbar {
+                flex-direction: column;
+                gap: 15px;
+                padding: 20px;
+            }
+
+            .nav-links {
+                justify-content: center;
+                gap: 15px;
+            }
+
+            .hero {
+                padding: 45px 20px;
+            }
+
+            .hero h1 {
+                font-size: 29px;
+            }
+
+            .cards {
+                padding: 0 20px 35px;
+            }
+
+            .card {
+                width: 100%;
+                max-width: 350px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- Navigation -->
+<nav class="navbar">
+
+    <div class="logo">
+        CineBook
+    </div>
+
+    <div class="nav-links">
+        <a href="/movies">Movies</a>
+        <a href="/theatres">Theatres</a>
+        <a href="/screens">Screens</a>
+        <a href="/shows">Shows</a>
+        <a href="/users">Users</a>
+    </div>
+
+</nav>
+
+<!-- Hero Section -->
+<section class="hero">
+
+    <h1>
+        Welcome to <span>CineBook</span>
+    </h1>
+
+    <p>
+        Discover movies, explore theatres, check show timings,
+        and manage your movie ticket bookings.
+    </p>
+
+    <a href="/movies" class="hero-button">
+        Explore Movies
+    </a>
+
+</section>
+
+<!-- Features Section -->
+<h2 class="section-title">Explore the System</h2>
+
+<div class="cards">
+
+    <div class="card">
+        <div class="card-icon">🎬</div>
+        <h3>Movies</h3>
+        <p>Browse available movies and check their details.</p>
+        <a href="/movies">View Movies</a>
+    </div>
+
+    <div class="card">
+        <div class="card-icon">🏢</div>
+        <h3>Theatres</h3>
+        <p>Explore theatres where movies are being shown.</p>
+        <a href="/theatres">View Theatres</a>
+    </div>
+
+    <div class="card">
+        <div class="card-icon">💺</div>
+        <h3>Screens</h3>
+        <p>View screens and their seating capacity.</p>
+        <a href="/screens">View Screens</a>
+    </div>
+
+    <div class="card">
+        <div class="card-icon">🕐</div>
+        <h3>Shows</h3>
+        <p>Find available movie shows and timings.</p>
+        <a href="/shows">View Shows</a>
+    </div>
+
+    <div class="card">
+        <div class="card-icon">👤</div>
+        <h3>Users</h3>
+        <p>Manage and view registered users.</p>
+        <a href="/users">View Users</a>
+    </div>
+
+    <div class="card">
+        <div class="card-icon">🎟️</div>
+        <h3>Bookings</h3>
+        <p>View and manage movie ticket bookings.</p>
+        <a href="/bookings">View Bookings</a>
+    </div>
+
+</div>
+
+<!-- Footer -->
+<footer>
+    © 2026 CineBook · Movie Ticket Booking System
+</footer>
+
+</body>
+</html>

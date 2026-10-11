@@ -1,0 +1,165 @@
+
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Add Theatre</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f5f7;
+            color: #333;
+            margin: 0;
+            padding: 35px 20px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 28px;
+            font-weight: 600;
+            color: #292929;
+            margin: 0 0 28px;
+        }
+
+        .form-container {
+            width: 100%;
+            max-width: 480px;
+            margin: 0 auto;
+            padding: 28px;
+            background-color: #fff;
+            border: 1px solid #e5e5e5;
+            border-radius: 8px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #444;
+        }
+
+        input {
+            display: block;
+            width: 100%;
+            padding: 11px 12px;
+            border: 1px solid #d5d5d5;
+            border-radius: 5px;
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            color: #333;
+            background-color: #fff;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #777;
+        }
+
+        button {
+            width: 100%;
+            padding: 11px;
+            margin-top: 4px;
+            background-color: #333;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #1f1f1f;
+        }
+
+        .back-link {
+            display: block;
+            width: fit-content;
+            margin: 22px auto 0;
+            color: #444;
+            font-size: 14px;
+            text-decoration: none;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 25px 14px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .form-container {
+                padding: 22px 18px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<h1>Add Theatre</h1>
+
+<div class="form-container">
+
+    <form th:action="@{/add}"
+          th:object="${theatre}"
+          method="post">
+
+        <div class="form-group">
+            <label for="theatreName">
+                Theatre Name:
+            </label>
+
+            <input
+                    type="text"
+                    id="theatreName"
+                    th:field="*{theatreName}"
+                    placeholder="Enter theatre name"
+                    required>
+        </div>
+
+        <div class="form-group">
+            <label for="location">
+                Location:
+            </label>
+
+            <input
+                    type="text"
+                    id="location"
+                    th:field="*{location}"
+                    placeholder="Enter location"
+                    required>
+        </div>
+
+        <button type="submit">
+            Add Theatre
+        </button>
+
+    </form>
+
+</div>
+
+<a href="/theatres" class="back-link">
+    Back to Theatres
+</a>
+
+</body>
+</html>

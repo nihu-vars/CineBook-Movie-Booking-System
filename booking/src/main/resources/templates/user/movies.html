@@ -1,0 +1,332 @@
+
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Available Movies | CineBook</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+            min-height: 100vh;
+        }
+
+        /* Navbar - consistent with homepage */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            background-color: white;
+            border-bottom: 1px solid #e0e0e0;
+            gap: 20px;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 25px;
+            flex-wrap: wrap;
+        }
+
+        .nav-links a {
+            color: #444;
+            text-decoration: none;
+            font-size: 15px;
+        }
+
+        .nav-links a:hover {
+            color: #000;
+            text-decoration: underline;
+        }
+
+        /* Main content */
+        .container {
+            max-width: 1200px;
+            margin: 35px auto;
+            padding: 0 30px 40px;
+        }
+
+        .page-heading {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .page-heading h1 {
+            font-size: 32px;
+            margin-bottom: 12px;
+            color: #333;
+        }
+
+        .page-heading p {
+            font-size: 15px;
+            color: #666;
+            line-height: 1.7;
+        }
+
+        /* Movie grid */
+        .movie-grid {
+            display: grid;
+            grid-template-columns: repeat(
+                auto-fill,
+                minmax(220px, 1fr)
+            );
+            gap: 25px;
+        }
+
+        .movie-card {
+            background-color: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            overflow: hidden;
+            transition: box-shadow 0.2s;
+        }
+
+        .movie-card:hover {
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+        }
+
+        .poster-container {
+            height: 300px;
+            background-color: #eee;
+            overflow: hidden;
+        }
+
+        .movie-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .movie-info {
+            padding: 20px;
+        }
+
+        .movie-info h2 {
+            font-size: 19px;
+            margin-bottom: 15px;
+            color: #333;
+            line-height: 1.4;
+            overflow-wrap: anywhere;
+        }
+
+        .movie-info p {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+
+        .movie-info strong {
+            color: #333;
+        }
+
+        .rating {
+            color: #555;
+            font-weight: bold;
+        }
+
+        /* Buttons - same dark grey as homepage */
+        .view-btn {
+            display: block;
+            width: 100%;
+            margin-top: 18px;
+            padding: 10px 15px;
+            background-color: #333;
+            color: white;
+            border: 1px solid #333;
+            border-radius: 4px;
+            text-decoration: none;
+            text-align: center;
+            font-size: 14px;
+            transition: background-color 0.2s;
+        }
+
+        .view-btn:hover {
+            background-color: #222;
+        }
+
+        /* Empty state */
+        .empty-state {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 40px 20px;
+            background-color: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+        }
+
+        .empty-state h2 {
+            font-size: 21px;
+            margin-bottom: 12px;
+        }
+
+        .empty-state p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 20px;
+            border-top: 1px solid #e0e0e0;
+            background-color: white;
+            color: #777;
+            font-size: 14px;
+        }
+
+        /* Responsive design */
+        @media (max-width: 700px) {
+            .navbar {
+                flex-direction: column;
+                gap: 15px;
+                padding: 20px;
+            }
+
+            .nav-links {
+                justify-content: center;
+                gap: 15px;
+            }
+
+            .container {
+                margin: 25px auto;
+                padding: 0 20px 30px;
+            }
+
+            .page-heading h1 {
+                font-size: 27px;
+            }
+
+            .movie-grid {
+                grid-template-columns: repeat(
+                    auto-fill,
+                    minmax(155px, 1fr)
+                );
+                gap: 15px;
+            }
+
+            .poster-container {
+                height: 230px;
+            }
+
+            .movie-info {
+                padding: 13px;
+            }
+
+            .movie-info h2 {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- Navigation -->
+<nav class="navbar">
+
+    <a class="logo" th:href="@{/user/movies}">
+        CineBook
+    </a>
+
+    <div class="nav-links">
+        <a th:href="@{/user/movies}">Movies</a>
+        <a th:href="@{/user/bookings}">My Bookings</a>
+        <a th:href="@{/user/user-details}">My Account</a>
+    </div>
+
+</nav>
+
+<!-- Movies Section -->
+<main class="container">
+
+    <div class="page-heading">
+        <h1>Available Movies</h1>
+        <p>
+            Discover movies, explore their details, and choose
+            your next movie experience.
+        </p>
+    </div>
+
+    <div class="movie-grid">
+
+        <div class="movie-card"
+             th:each="movie : ${movies}">
+
+            <div class="poster-container">
+
+                <img th:src="${movie.moviePosterUrl}"
+                     th:alt="${movie.movieTitle}"
+                     loading="lazy">
+
+            </div>
+
+            <div class="movie-info">
+
+                <h2 th:text="${movie.movieTitle}">
+                    Movie Title
+                </h2>
+
+                <p>
+                    <strong>Genre:</strong>
+                    <span th:text="${movie.movieGenre}"></span>
+                </p>
+
+                <p>
+                    <strong>Rating:</strong>
+                    <span class="rating">
+                        ★ <span th:text="${movie.movieRating}"></span>
+                    </span>
+                </p>
+
+                <p>
+                    <strong>Duration:</strong>
+                    <span th:text="${movie.movieDurationMinutes}"></span>
+                    minutes
+                </p>
+
+                <a th:href="@{/user/movies/{id}(id=${movie.movieId})}"
+                   class="view-btn">
+                    View Details
+                </a>
+
+            </div>
+
+        </div>
+
+        <div class="empty-state"
+             th:if="${#lists.isEmpty(movies)}">
+
+            <h2>No Movies Available</h2>
+            <p>Please check back later for available movies.</p>
+
+        </div>
+
+    </div>
+
+</main>
+
+<footer>
+    © 2026 CineBook · Movie Ticket Booking System
+</footer>
+
+</body>
+</html>

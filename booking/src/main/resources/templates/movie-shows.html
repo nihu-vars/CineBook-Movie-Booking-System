@@ -1,0 +1,358 @@
+
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Book Tickets</title>
+
+  <style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: Arial, sans-serif;
+    }
+
+    body {
+        background-color: #f5f5f5;
+        color: #333;
+        min-height: 100vh;
+    }
+
+    /* Header */
+    .header {
+        background-color: white;
+        padding: 20px 40px;
+        border-bottom: 1px solid #e0e0e0;
+    }
+
+    .header h1 {
+        font-size: 24px;
+        color: #333;
+    }
+
+    /* Main Container */
+    .container {
+        width: calc(100% - 40px);
+        max-width: 1000px;
+        margin: 35px auto;
+    }
+
+    /* Movie Information */
+    .movie-header {
+        background-color: white;
+        padding: 25px;
+        border: 1px solid #e0e0e0;
+        border-radius: 6px;
+        margin-bottom: 25px;
+    }
+
+    .movie-header h2 {
+        font-size: 26px;
+        margin-bottom: 15px;
+        color: #333;
+    }
+
+    .movie-description {
+        color: #666;
+        line-height: 1.6;
+        margin-bottom: 18px;
+        font-size: 15px;
+    }
+
+    .movie-header p {
+        margin-bottom: 12px;
+        font-size: 15px;
+        line-height: 1.6;
+    }
+
+    .movie-header p:last-child {
+        margin-bottom: 0;
+    }
+
+    /* Shows Section */
+    .shows-container {
+        background-color: white;
+        padding: 25px;
+        border: 1px solid #e0e0e0;
+        border-radius: 6px;
+    }
+
+    .shows-container h2 {
+        font-size: 23px;
+        margin-bottom: 25px;
+        color: #333;
+    }
+
+    /* Individual Show */
+    .show-card {
+        border: 1px solid #e0e0e0;
+        border-radius: 5px;
+        padding: 22px;
+        margin-bottom: 18px;
+        background-color: white;
+    }
+
+    .show-card:last-child {
+        margin-bottom: 0;
+    }
+
+    .theatre-name {
+        font-size: 19px;
+        font-weight: bold;
+        margin-bottom: 8px;
+        color: #333;
+    }
+
+    .location {
+        color: #777;
+        font-size: 14px;
+        margin-bottom: 18px;
+    }
+
+    .screen-name {
+        font-size: 15px;
+        margin-bottom: 15px;
+    }
+
+    .show-date {
+        font-size: 15px;
+        margin-bottom: 18px;
+    }
+
+    .show-time-label {
+        display: block;
+        font-size: 15px;
+        font-weight: bold;
+        margin-bottom: 12px;
+    }
+
+    /* Show Time Link */
+    .show-time {
+        display: inline-flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 8px;
+        padding: 11px 16px;
+        margin: 0 8px 8px 0;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        text-decoration: none;
+        color: #333;
+        background-color: #fff;
+        font-size: 14px;
+        transition: background-color 0.2s, border-color 0.2s;
+    }
+
+    .show-time:hover {
+        background-color: #f5f5f5;
+        border-color: #777;
+    }
+
+    .price {
+        margin-left: 5px;
+        padding-left: 10px;
+        border-left: 1px solid #ddd;
+        font-weight: bold;
+        color: #333;
+    }
+
+    /* No Shows */
+    .no-shows {
+        padding: 30px 15px;
+        text-align: center;
+        color: #777;
+        border: 1px solid #e0e0e0;
+        border-radius: 5px;
+        background-color: #fafafa;
+    }
+
+    .no-shows h3 {
+        color: #444;
+        font-size: 19px;
+        margin-bottom: 10px;
+    }
+
+    .no-shows p {
+        font-size: 14px;
+        line-height: 1.6;
+    }
+
+    /* Back Button */
+    .back-button {
+        display: inline-block;
+        margin-top: 22px;
+        padding: 10px 18px;
+        background-color: #333;
+        color: white;
+        text-decoration: none;
+        border: 1px solid #333;
+        border-radius: 4px;
+        font-size: 14px;
+        transition: background-color 0.2s;
+    }
+
+    .back-button:hover {
+        background-color: #222;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 600px) {
+        .header {
+            padding: 20px;
+        }
+
+        .container {
+            width: calc(100% - 24px);
+            margin: 20px auto;
+        }
+
+        .movie-header,
+        .shows-container {
+            padding: 18px;
+        }
+
+        .movie-header h2 {
+            font-size: 23px;
+        }
+
+        .shows-container h2 {
+            font-size: 21px;
+        }
+
+        .show-card {
+            padding: 16px;
+        }
+
+        .show-time {
+            padding: 10px 12px;
+        }
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- Header -->
+<div class="header">
+  <h1>CineBook</h1>
+</div>
+
+<div class="container">
+
+  <!-- Movie Information -->
+  <div class="movie-header">
+
+    <h2 th:text="${movie.movieTitle}">
+      Movie Title
+    </h2>
+
+    <p class="movie-description"
+       th:text="${movie.movieDescription}">
+      Movie description
+    </p>
+
+    <p>
+      <strong>Genre:</strong>
+      <span th:text="${movie.movieGenre}"></span>
+    </p>
+
+    <p>
+      <strong>Language:</strong>
+      <span th:text="${movie.movieLanguages}"></span>
+    </p>
+
+  </div>
+
+  <!-- Available Shows -->
+  <div class="shows-container">
+
+    <h2>Available Shows</h2>
+
+    <!-- If shows exist -->
+    <div th:if="${not #lists.isEmpty(shows)}">
+
+      <div class="show-card"
+           th:each="show : ${shows}">
+
+        <!-- Theatre -->
+        <div class="theatre-name"
+             th:text="${show.screenModel.theatre.theatreName}">
+          Theatre Name
+        </div>
+
+        <!-- Location -->
+        <div class="location"
+             th:text="${show.screenModel.theatre.location}">
+          Theatre Location
+        </div>
+
+        <!-- Screen -->
+        <div class="screen-name">
+          <strong>Screen:</strong>
+          <span th:text="${show.screenModel.screenName}">
+                            Screen 1
+                        </span>
+        </div>
+
+        <!-- Show Date -->
+        <div class="show-date">
+          <strong>Date:</strong>
+          <span th:text="${show.showDate}">
+                            2026-09-03
+                        </span>
+        </div>
+
+        <!-- Show Time and Price -->
+        <div>
+          <span class="show-time-label">Show Time:</span>
+
+          <a class="show-time"
+             th:href="@{/booking/show/{id}(id=${show.showId})}">
+
+                            <span th:text="${show.showStartTime}">
+                                10:00
+                            </span>
+
+            <span>-</span>
+
+            <span th:text="${show.showEndTime}">
+                                12:30
+                            </span>
+
+            <span class="price">
+                                ₹<span th:text="${show.price}">250</span>
+                            </span>
+
+          </a>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- If no shows are available -->
+    <div class="no-shows"
+         th:if="${#lists.isEmpty(shows)}">
+
+      <h3>No shows available</h3>
+
+      <p>
+        There are currently no shows available for this movie.
+      </p>
+
+    </div>
+
+  </div>
+
+  <!-- Back Button -->
+  <a href="/movies" class="back-button">
+    Back to Movies
+  </a>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,378 @@
+
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Complete Payment</title>
+
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+  <style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: Arial, sans-serif;
+    }
+
+    body {
+        background-color: #f5f5f5;
+        color: #333;
+        min-height: 100vh;
+    }
+
+    /* Header */
+    .header {
+        background-color: white;
+        padding: 20px 40px;
+        border-bottom: 1px solid #e0e0e0;
+    }
+
+    .header h1 {
+        font-size: 24px;
+        color: #333;
+    }
+
+    /* Main Container */
+    .container {
+        width: calc(100% - 30px);
+        max-width: 500px;
+        margin: 40px auto;
+    }
+
+    /* Payment Card */
+    .payment-card {
+        background-color: white;
+        padding: 30px;
+        border: 1px solid #e0e0e0;
+        border-radius: 6px;
+    }
+
+    .payment-card h2 {
+        font-size: 25px;
+        text-align: center;
+        color: #333;
+        margin-bottom: 30px;
+    }
+
+    /* Booking Details */
+    .detail {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 20px;
+        margin: 20px 0;
+        color: #666;
+        font-size: 15px;
+    }
+
+    .detail strong {
+        text-align: right;
+        color: #333;
+        overflow-wrap: anywhere;
+    }
+
+    hr {
+        border: none;
+        border-top: 1px solid #e0e0e0;
+        margin: 25px 0;
+    }
+
+    /* Amount */
+    .amount {
+        font-size: 22px;
+        font-weight: bold;
+        color: #333;
+        text-align: right;
+    }
+
+    /* Pay Button */
+    .pay-button {
+        width: 100%;
+        padding: 12px;
+        margin-top: 20px;
+        background-color: #333;
+        color: white;
+        border: 1px solid #333;
+        border-radius: 4px;
+        font-size: 15px;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+
+    .pay-button:hover {
+        background-color: #222;
+    }
+
+    .pay-button:disabled {
+        background-color: #999;
+        border-color: #999;
+        cursor: not-allowed;
+    }
+
+    /* Status Message */
+    #message {
+        text-align: center;
+        margin-top: 18px;
+        color: #555;
+        font-size: 14px;
+        line-height: 1.6;
+        overflow-wrap: anywhere;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 500px) {
+        .header {
+            padding: 20px;
+        }
+
+        .container {
+            margin: 25px auto;
+        }
+
+        .payment-card {
+            padding: 22px 18px;
+        }
+
+        .payment-card h2 {
+            font-size: 22px;
+        }
+
+        .detail {
+            gap: 12px;
+            font-size: 14px;
+        }
+
+        .amount {
+            font-size: 20px;
+        }
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- Header -->
+<div class="header">
+  <h1>CineBook</h1>
+</div>
+
+<!-- Payment Container -->
+<div class="container">
+
+  <div class="payment-card">
+
+    <h2>Complete Your Booking</h2>
+
+    <!-- Booking Details -->
+    <div class="detail">
+      <span>Booking ID</span>
+      <strong th:text="${booking.bookingId}">123</strong>
+    </div>
+
+    <div class="detail">
+      <span>Movie</span>
+      <strong th:text="${booking.showModel.movieModel.movieTitle}">
+        Movie Name
+      </strong>
+    </div>
+
+    <div class="detail">
+      <span>Show Date</span>
+      <strong th:text="${booking.showModel.showDate}">
+        Date
+      </strong>
+    </div>
+
+    <div class="detail">
+      <span>Booking Status</span>
+      <strong th:text="${booking.bookingStatus}">
+        PENDING
+      </strong>
+    </div>
+
+    <hr>
+
+    <!-- Total Amount -->
+    <div class="detail">
+      <span>Total Amount</span>
+
+      <span class="amount">
+                    ₹<span th:text="${booking.bookingAmount}">0</span>
+                </span>
+    </div>
+
+    <!-- Payment Button -->
+    <button
+            id="payButton"
+            class="pay-button"
+            type="button"
+            onclick="payNow()">
+
+      Pay Now
+
+    </button>
+
+    <p id="message" role="status" aria-live="polite"></p>
+
+  </div>
+
+</div>
+
+<!-- Razorpay Payment Logic -->
+<script th:inline="javascript">
+
+  const bookingId = /*[[${booking.bookingId}]]*/ 0;
+  const amount = /*[[${booking.bookingAmount}]]*/ 0;
+  const razorpayKeyId = /*[[${razorpayKeyId}]]*/ '';
+
+  async function payNow() {
+
+      const button = document.getElementById("payButton");
+      const message = document.getElementById("message");
+
+      button.disabled = true;
+      message.textContent = "Creating payment order...";
+
+      try {
+
+          // Create a Razorpay order through the backend.
+          const response = await fetch("/payment", {
+              method: "POST",
+              headers: {
+                  "Content-Type":
+                      "application/x-www-form-urlencoded"
+              },
+              body: new URLSearchParams({
+                  bookingId: bookingId,
+                  amount: amount
+              })
+          });
+
+          if (!response.ok) {
+              throw new Error(
+                  "Unable to create payment order."
+              );
+          }
+
+          const payment = await response.json();
+
+          const options = {
+              key: razorpayKeyId,
+              amount: Math.round(Number(payment.amount) * 100),
+              currency: payment.currency,
+              name: "CineBook",
+              description: "Movie ticket payment",
+              order_id: payment.razorpayOrderId,
+
+              handler: async function (result) {
+
+                  message.textContent =
+                      "Verifying payment. Please wait...";
+
+                  try {
+
+                      const verifyResponse = await fetch(
+                          "/verifyPayment",
+                          {
+                              method: "POST",
+                              headers: {
+                                  "Content-Type":
+                                      "application/x-www-form-urlencoded"
+                              },
+                              body: new URLSearchParams({
+                                  razorpayOrderId:
+                                      result.razorpay_order_id,
+                                  razorpayPaymentId:
+                                      result.razorpay_payment_id,
+                                  razorpaySignature:
+                                      result.razorpay_signature
+                              })
+                          }
+                      );
+
+                      if (!verifyResponse.ok) {
+                          throw new Error(
+                              "Payment could not be verified yet."
+                          );
+                      }
+
+                      const verifiedPayment =
+                          await verifyResponse.json();
+
+                      if (
+                          verifiedPayment.status === "SUCCESS"
+                      ) {
+
+                          message.textContent =
+                              "Payment successful! Redirecting...";
+
+                          window.location.href =
+                              "/user/bookings";
+
+                      } else {
+
+                          message.textContent =
+                              "Payment is not confirmed. " +
+                              "Please check your booking status.";
+
+                          button.disabled = false;
+                      }
+
+                  } catch (error) {
+
+                      message.textContent =
+                          error.message +
+                          " Do not pay again until you check " +
+                          "your payment status.";
+
+                      button.disabled = false;
+                  }
+              },
+
+              modal: {
+                  ondismiss: function () {
+
+                      message.textContent =
+                          "Checkout closed. Check payment status " +
+                          "before retrying.";
+
+                      button.disabled = false;
+                  }
+              },
+
+              theme: {
+                  color: "#333333"
+              }
+          };
+
+          const checkout = new Razorpay(options);
+
+          checkout.on("payment.failed", function () {
+
+              message.textContent =
+                  "Payment failed. You can try again.";
+
+              button.disabled = false;
+          });
+
+          checkout.open();
+
+          message.textContent = "";
+
+      } catch (error) {
+
+          message.textContent =
+              error.message || "Unable to start payment.";
+
+          button.disabled = false;
+      }
+  }
+
+</script>
+
+</body>
+</html>
