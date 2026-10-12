@@ -19,8 +19,18 @@ public class PaymentModel {
     //using an enum for the payment status
     @Enumerated(EnumType.STRING)   //is tells jpa to store enum as string otherwise it can store enum as number also in database
     private PaymentStatus status;
+    private String razorpayRefundId;
 
     public PaymentModel() {};
+
+
+    public String getRazorpayRefundId() {
+        return razorpayRefundId;
+    }
+
+    public void setRazorpayRefundId(String razorpayRefundId) {
+        this.razorpayRefundId = razorpayRefundId;
+    }
 
     public PaymentStatus getStatus() {
         return status;

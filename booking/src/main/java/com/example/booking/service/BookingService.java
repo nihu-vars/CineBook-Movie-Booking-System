@@ -11,6 +11,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -23,7 +24,7 @@ public class BookingService {
     @Autowired
     SeatRepository seatRepository;
     @Autowired
-    ShowRepository showRepository;
+    PaymentService paymentService;
     @Autowired
     ShowService showService;
     @Autowired
@@ -33,6 +34,8 @@ public class BookingService {
     @Transactional   //so we are maing it transactional so that if two users try to book the same seats at the same time then that race condition should be resolved
     public BookingModel createBooking(Long showId, Long userId, List<Long> seatIds) {
         ShowModel showModel = showService.getShowById(showId);
+        // Remove expired seat holds before checking availability.
+        bookingSeatRepository.deleteExpiredPendingSeatsForShow(showId);
         List<SeatModel> seatModels = seatRepository.findAllById(seatIds);
 
         UserModel userModel = userService.getUserById(userId);
@@ -65,6 +68,8 @@ public class BookingService {
         booking.setBookingDate(LocalDate.now());
         booking.setBookingAmount(amount);
         booking.setBookingStatus("PENDING");
+        //adding this so that if the payment is not done in 10 minutes after selecting seats. then the seats will be released
+        booking.setHoldExpiresAt(LocalDateTime.now().plusMinutes(1));
 
         booking = bookingRepository.save(booking);
 
@@ -98,9 +103,13 @@ public class BookingService {
         return bookingRepository.findBookingByUserId(userId);
 
     }
+
+
     @Transactional
     public void cancelBooking(Long bookingId, Long userId) {
-        BookingModel booking = bookingRepository.findById(bookingId).orElseThrow(() -> new RuntimeException("Booking not found"));
+        BookingModel booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new RuntimeException("Booking not found"));
+
         LocalDate today = LocalDate.now();
         ShowModel show = booking.getShowModel();
         LocalDate showDate = show.getShowDate();
@@ -109,16 +118,27 @@ public class BookingService {
             throw new RuntimeException("You cannot cancel this booking");
         }
 
-        //cant cancel booking after the show date
-        if (today.isAfter(showDate)) {
-            throw new RuntimeException("You can not cancel the booking after the show");
+        if (!today.isBefore(showDate)) {
+            throw new RuntimeException(
+                    "You cannot cancel the booking on or after the show date"
+            );
         }
 
-        // cant cancel booking on the show date
-        if (today.isEqual(showDate)) {
-            throw new RuntimeException("You cannot cancel this booking on the show date");
+        if ("CANCELLED".equals(booking.getBookingStatus())) {
+            throw new RuntimeException("Booking is already cancelled");
         }
-        bookingSeatRepository.deleteByBookingModel(booking);  //deleting the seat if the booking has been cancelled so that the other user can book the seat
+
+        // Initiate refund before deleting the seats.
+        try {
+            paymentService.refundSuccessfulPayment(bookingId);
+        } catch (Exception e) {
+            throw new RuntimeException(
+                    "Refund could not be initiated. Please try again later.", e
+            );
+        }
+
+        // Delete the seats only once.
+        bookingSeatRepository.deleteByBookingModel(booking);
 
         booking.setBookingStatus("CANCELLED");
         bookingRepository.save(booking);
@@ -151,10 +171,15 @@ public class BookingService {
 
         if(!"PENDING".equals(bookingModel.getBookingStatus())) {
             throw new RuntimeException("Only pending bookings can be confirmed");
+        }
 
+        if (bookingModel.getHoldExpiresAt() == null ||
+                !bookingModel.getHoldExpiresAt().isAfter(LocalDateTime.now())) {
+            throw new RuntimeException("Seat hold has expired. Please book again.");
         }
 
         bookingModel.setBookingStatus("CONFIRMED");
+        bookingModel.setHoldExpiresAt(null);
         return bookingRepository.save(bookingModel);
     }
 

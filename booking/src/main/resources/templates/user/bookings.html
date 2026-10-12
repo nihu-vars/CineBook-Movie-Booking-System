@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 
@@ -5,7 +6,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>My Bookings</title>
+    <title>My Bookings | CineBook</title>
 
     <style>
         * {
@@ -73,15 +74,36 @@
             color: #666;
         }
 
-        .status {
+        .status,
+        .payment-status {
             font-weight: 600;
+        }
+
+        .status {
             color: #287747;
+        }
+
+        .status.cancelled {
+            color: #b42318;
         }
 
         .amount {
             font-weight: 600;
             font-size: 17px;
             color: #292929;
+        }
+
+        .payment-status {
+            color: #287747;
+        }
+
+        .payment-status.refund-pending {
+            color: #a16207;
+        }
+
+        .payment-status.failed,
+        .payment-status.not-available {
+            color: #b42318;
         }
 
         .booking-info form {
@@ -173,17 +195,16 @@
 
 <div class="bookings-container">
 
-    <!-- If there are no bookings -->
+    <!-- Display when there are no bookings -->
     <div class="no-bookings"
          th:if="${#lists.isEmpty(bookings)}">
 
         <h2>No bookings found</h2>
-
         <p>You have not booked any tickets yet.</p>
 
     </div>
 
-    <!-- Show all bookings -->
+    <!-- Display each booking -->
     <div class="booking-card"
          th:each="booking : ${bookings}">
 
@@ -222,18 +243,35 @@
                 </span>
             </p>
 
+            <!-- Booking status -->
             <p>
-                <strong>Status:</strong>
+                <strong>Booking Status:</strong>
                 <span class="status"
+                      th:classappend="${booking.bookingStatus == 'CANCELLED'} ? ' cancelled' : ''"
                       th:text="${booking.bookingStatus}">
                     CONFIRMED
                 </span>
             </p>
 
-            <form th:action="@{/user/bookings/{id}/cancel(id=${booking.bookingId})}"
+            <!-- Payment status -->
+            <p>
+                <strong>Payment Status:</strong>
+
+                <span class="payment-status"
+                      th:with="paymentStatus=${paymentStatuses[booking.bookingId]}"
+                      th:text="${paymentStatus != null ? paymentStatus : 'NOT AVAILABLE'}"
+                      th:classappend="${paymentStatus == 'REFUND_PENDING'} ? ' refund-pending' : (${paymentStatus == 'FAILED'} ? ' failed' : (${paymentStatus == null} ? ' not-available' : ''))">
+                    SUCCESS
+                </span>
+            </p>
+
+            <!-- Show cancellation button only for active bookings -->
+            <form th:if="${booking.bookingStatus != 'CANCELLED'}"
+                  th:action="@{/user/bookings/{id}/cancel(id=${booking.bookingId})}"
                   method="post">
 
-                <button type="submit">
+                <button type="submit"
+                        onclick="return confirm('Are you sure you want to cancel this booking?');">
                     Cancel Booking
                 </button>
 

@@ -2,6 +2,7 @@ package com.example.booking.controller;
 
 import com.example.booking.dto.BookingRequest;
 import com.example.booking.model.*;
+import com.example.booking.repository.PaymentRepository;
 import com.example.booking.service.BookingService;
 import com.example.booking.service.SeatService;
 import com.example.booking.service.ShowService;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -34,6 +36,9 @@ public class BookingViewController {
 
     @Autowired
     UserService userService;
+
+    @Autowired
+    PaymentRepository paymentRepository;
 
     @Value("${razorpay.key.id}")
     private String razorpayKeyId;
@@ -131,7 +136,22 @@ public class BookingViewController {
                         user.getUserId());
 
         model.addAttribute("bookings", bookings);
+        Map<Long, String> paymentStatuses = new HashMap<>();
 
+        for (BookingModel booking : bookings) {
+
+            PaymentModel payment =
+                    paymentRepository.findByBookingId(booking.getBookingId());
+
+            if (payment != null && payment.getStatus() != null) {
+                paymentStatuses.put(
+                        booking.getBookingId(),
+                        payment.getStatus().name()
+                );
+            }
+        }
+
+        model.addAttribute("paymentStatuses", paymentStatuses);
         return "user/bookings";
     }
 

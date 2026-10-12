@@ -10,4 +10,6 @@ import java.util.Optional;
 public interface PaymentRepository extends JpaRepository<PaymentModel, Long> {
     //method to find a payment by razorpay order id
     Optional<PaymentModel> findByRazorpayOrderId(String razorpayOderId);
+    PaymentModel findByBookingId(Long bookingId);
+    Optional<PaymentModel> findByRazorpayRefundId(String razorpayRefundId);
 }

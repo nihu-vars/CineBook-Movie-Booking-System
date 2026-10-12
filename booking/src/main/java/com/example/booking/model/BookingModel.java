@@ -17,20 +17,29 @@ public class BookingModel {
     @ManyToOne
     @JoinColumn(name = "showId")
     private ShowModel showModel;
+    @ManyToOne
+    @JoinColumn(name = "userId")
+    private UserModel userModel;
+    @Column(name = "hold_expires_at")
+    private LocalDateTime holdExpiresAt;
 
     public UserModel getUserModel() {
         return userModel;
     }
 
+    public BookingModel() {}
+
+    public LocalDateTime getHoldExpiresAt() {
+        return holdExpiresAt;
+    }
+
+    public void setHoldExpiresAt(LocalDateTime holdExpiresAt) {
+        this.holdExpiresAt = holdExpiresAt;
+    }
+
     public void setUserModel(UserModel userModel) {
         this.userModel = userModel;
     }
-
-    @ManyToOne
-    @JoinColumn(name = "userId")
-    private UserModel userModel;
-
-    public BookingModel() {}
 
     public Long getBookingId() {
         return bookingId;

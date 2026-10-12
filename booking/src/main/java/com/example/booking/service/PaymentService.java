@@ -1,25 +1,30 @@
 package com.example.booking.service;
 
 import com.example.booking.model.BookingModel;
+import com.example.booking.model.BookingSeatModel;
 import com.example.booking.model.PaymentModel;
 import com.example.booking.model.PaymentStatus;
+import com.example.booking.repository.BookingRepository;
+import com.example.booking.repository.BookingSeatRepository;
 import com.example.booking.repository.PaymentRepository;
-import com.razorpay.Order;
-import com.razorpay.RazorpayClient;
-import com.razorpay.Utils;
+import com.razorpay.*;
+import jakarta.transaction.Transactional;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class PaymentService {
     @Autowired
     PaymentRepository paymentRepository;
     @Autowired
-    BookingService bookingService;
+    BookingRepository bookingRepository;
+    @Autowired
+    BookingSeatRepository bookingSeatRepository;
 
     @Value("${razorpay.key.id}")
     private String razorpayKeyId;
@@ -32,7 +37,7 @@ public class PaymentService {
         RazorpayClient razorpayClient = new RazorpayClient(razorpayKeyId, razorpayKeySecret);
 
         //getting the amount from the database
-        BookingModel booking = bookingService.getBookingById(bookingId);
+        BookingModel booking = bookingRepository.findById(bookingId).orElseThrow(() -> new RuntimeException("Booking not found"));
         if (!"PENDING".equals(booking.getBookingStatus())) {
             throw new RuntimeException(
                     "Payment can only be initiated for a pending booking");
@@ -60,6 +65,7 @@ public class PaymentService {
         return paymentRepository.save(paymentModel);
     }
 
+    @Transactional
     public PaymentModel verifyPayment(String razorpayOrderId, String razorpayPaymentId, String razorpaySignature) throws  Exception {
         PaymentModel payment = paymentRepository.findByRazorpayOrderId(razorpayOrderId).orElseThrow(() -> new RuntimeException("Payment not found"));
         JSONObject attributes = new JSONObject();
@@ -104,10 +110,170 @@ public class PaymentService {
         }
 
         payment.setRazorpayPaymentId(razorpayPaymentId);
-        payment.setStatus(PaymentStatus.SUCCESS);
 
-        PaymentModel savedPayment = paymentRepository.save(payment);
-        bookingService.confirmBooking(payment.getBookingId());
-        return savedPayment;
+        BookingModel booking= bookingRepository.findById(payment.getBookingId()).orElseThrow(() -> new RuntimeException("Booking not found"));
+
+        if(!"PENDING".equals(booking.getBookingStatus()) || booking.getHoldExpiresAt() == null || !booking.getHoldExpiresAt().isAfter((LocalDateTime.now()))) {
+            payment.setStatus(PaymentStatus.REFUND_PENDING);
+            paymentRepository.save(payment);
+            initiateRefundForPending(payment.getBookingId());
+
+            return paymentRepository.findByRazorpayOrderId(razorpayOrderId).orElseThrow(() -> new RuntimeException("Payment not found"));
+        }
+
+        List<BookingSeatModel> heldSeats = bookingSeatRepository.findByBookingModel(booking);
+
+        if(heldSeats.isEmpty()) {
+            payment.setStatus(PaymentStatus.REFUND_PENDING);
+            paymentRepository.save(payment);
+
+            initiateRefundForPending(payment.getBookingId());
+
+            return paymentRepository.findByRazorpayOrderId(razorpayOrderId).orElseThrow(() -> new RuntimeException("Payment not found"));
+        }
+
+
+        Long showId = booking.getShowModel().getShowId();
+        for (BookingSeatModel heldSeat : heldSeats) {
+            Long seatId = heldSeat.getSeatModel().getSeatId();
+
+            boolean alreadyBooked = bookingSeatRepository.existsConfirmedBookingForSeat(showId, seatId);
+
+            if(alreadyBooked) {
+                payment.setStatus(PaymentStatus.REFUND_PENDING);
+                paymentRepository.save(payment);
+
+                initiateRefundForPending(payment.getBookingId());
+                return paymentRepository.findByRazorpayOrderId(razorpayOrderId).orElseThrow(() -> new RuntimeException("Payment not found"));
+            }
+        }
+        booking.setBookingStatus("CONFIRMED");
+        booking.setHoldExpiresAt(null);
+
+        bookingRepository.save(booking);
+        payment.setStatus(PaymentStatus.SUCCESS);
+        return paymentRepository.save(payment);
+
+
+    }
+
+    @Transactional
+    public void refundSuccessfulPayment(Long bookingId) throws Exception {
+        PaymentModel payment = paymentRepository
+                .findByBookingId(bookingId);
+
+        if (payment == null) return;
+
+
+        if (payment.getStatus() != PaymentStatus.SUCCESS) {
+            return;
+        }
+
+        String razorpayPaymentId = payment.getRazorpayPaymentId();
+
+        if (razorpayPaymentId == null || razorpayPaymentId.isBlank()) {
+            throw new IllegalStateException("Razorpay payment ID is missing");
+        }
+
+        RazorpayClient razorpayClient = new RazorpayClient(razorpayKeyId, razorpayKeySecret);
+
+        JSONObject jsonObject = new JSONObject();
+
+        int amountInPaise = (int) Math.round(payment.getAmount() * 100);
+
+        jsonObject.put("amount", amountInPaise);
+
+        try {
+            Refund refund = razorpayClient.payments.refund(
+                    razorpayPaymentId, jsonObject
+            );
+
+            String refundId = refund.get("id");
+            String refundStatus = refund.get("status");
+
+            payment.setRazorpayRefundId(refundId);
+
+            if ("processed".equalsIgnoreCase(refundStatus)) {
+                payment.setStatus(PaymentStatus.REFUNDED);
+            } else {
+                payment.setStatus(PaymentStatus.REFUND_PENDING);
+            }
+
+            paymentRepository.save(payment);
+
+        } catch (RazorpayException e) {
+            String message = e.getMessage();
+
+            if (message != null &&
+                    message.contains("The payment has been fully refunded already")) {
+
+                payment.setStatus(PaymentStatus.REFUNDED);
+                paymentRepository.save(payment);
+                return;
+            }
+
+            throw e;
+        }
+    }
+
+    @Transactional
+    public void initiateRefundForPending(Long bookingId) throws Exception {
+        PaymentModel payment = paymentRepository.findByBookingId(bookingId);
+
+        if(payment == null) {
+            throw new RuntimeException("Payment not found for booking " + bookingId);
+        }
+
+        if(payment.getRazorpayRefundId() != null && !payment.getRazorpayRefundId().isBlank()){
+            return;
+        }
+
+        if(payment.getRazorpayPaymentId() == null || payment.getRazorpayPaymentId().isBlank()) {
+            throw new IllegalStateException("Razorpay payment ID is missing");
+        }
+
+        RazorpayClient razorpayClient = new RazorpayClient(razorpayKeyId, razorpayKeySecret);
+
+        com.razorpay.Payment razorpayPayment = razorpayClient.payments.fetch(payment.getRazorpayPaymentId());
+
+        if(!"captured".equalsIgnoreCase(razorpayPayment.get("status").toString())) {
+            throw new IllegalStateException("Payment is not captured; refind can't be initiated yet");
+        }
+
+        JSONObject jsonObject = new JSONObject();
+
+        JSONObject request = new JSONObject();
+        int amountInPaise = (int) Math.round(payment.getAmount() * 100);
+        request.put("amount", amountInPaise);
+
+        Refund refund = razorpayClient.payments.refund(
+                payment.getRazorpayPaymentId(), request);
+
+        payment.setRazorpayRefundId(refund.get("id"));
+
+        String refundStatus = refund.get("status");
+
+        if ("processed".equalsIgnoreCase(refundStatus)) {
+            payment.setStatus(PaymentStatus.REFUNDED);
+        } else {
+            payment.setStatus(PaymentStatus.REFUND_PENDING);
+        }
+
+        paymentRepository.save(payment);
+
+    }
+
+    @Transactional
+    public void updateRefundStatus(String refundId, String refundStatus) {
+
+        PaymentModel payment = paymentRepository
+                .findByRazorpayRefundId(refundId)
+                .orElseThrow(() -> new RuntimeException(
+                        "Payment not found for refund " + refundId));
+
+        if ("processed".equalsIgnoreCase(refundStatus)) {
+            payment.setStatus(PaymentStatus.REFUNDED);
+            paymentRepository.save(payment);
+        }
     }
 }
